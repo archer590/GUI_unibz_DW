@@ -6,15 +6,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Vector;
 
-import components.*;
 
 public class DBConnection {
 	
+	private static Connection connectionDBusers = null;
 	private static Connection conn = null;
     private String dbname = null;
     private String username = null;
     private String password = null;
     private boolean correct = true;
+    public Vector<Incoming_Student> incoming_students = new Vector<Incoming_Student>();
     
     private String name = null;
     
@@ -65,10 +66,10 @@ public class DBConnection {
 		String port = "5432";
 		try {
 			Class.forName("org.postgresql.Driver");
-			String connectionUrl = "jdbc:postgresql://" + host + port + "/" + "admt2014_users";
-			conn = DriverManager.getConnection(connectionUrl, "admt2014", "admt");
+			String connectionUrl1 = "jdbc:postgresql://" + host + port + "/" + "admt2014_users";
+			connectionDBusers = DriverManager.getConnection(connectionUrl1, "admt2014", "admt");
 			
-			Statement stmt = conn.createStatement();            
+			Statement stmt = connectionDBusers.createStatement();            
             ResultSet rs = stmt.executeQuery("SELECT COUNT(user_key) AS ussdw FROM user_dw WHERE username ='"+username+"' AND password ='"+password+"'");
 
             int numberUser = 0;
@@ -78,11 +79,14 @@ public class DBConnection {
 
 			if (numberUser==1){
 				
-				Statement stmt2 = conn.createStatement();            
+				Statement stmt2 = connectionDBusers.createStatement();            
 	            ResultSet rs2 = stmt2.executeQuery("SELECT name FROM user_dw WHERE username ='"+username+"' AND password ='"+password+"'");
 	            while (rs2.next()){
 	            	setName(rs2.getString("name"));           	
 	            }
+	            closeDBusersConnection();
+	            String connectionUrl = "jdbc:postgresql://" + host + port + "/" + "admt2014_uniwarehouse";
+				conn = DriverManager.getConnection(connectionUrl, "admt2014", "admt");
 				
 				return true;
 			}
@@ -98,42 +102,16 @@ public class DBConnection {
     }
     
     // disconnect from the database
-    public void closeDBConnection() throws SQLException{
-    	conn.close();
+    public void closeDBusersConnection() throws SQLException{
+    	connectionDBusers.close();
     }
     
     /*ROLLUP Query*/
     public Vector<Incoming_Student> rollup_incoming_students(){
-    		Vector<Incoming_Student> incoming_students = new Vector<Incoming_Student>();
+    		
         	try {
         		Statement stmt = conn.createStatement();            
-                ResultSet rs = stmt.executeQuery("select cd.faculty, cd.study_plan, cd.curriculum_name, count(ef.student_key)"
-                		+ "from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) "
-                		+ "	join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key)"
-                		+ "	join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key"
-                		+ "where ud.university_name = 'Betty'"
-                		+ "group by cd.faculty, cd.study_plan, cd.curriculum_name"
-                		+ "union all"
-                		+ "select cd.faculty, cd.study_plan, NULL, count(ef.student_key)"
-                		+ "from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) "
-                		+ "	join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key)"
-                		+ "	join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key"
-                		+ "where ud.university_name = 'Betty'"
-                		+ "group by cd.faculty, cd.study_plan"
-                		+ "union all"
-                		+ "select cd.faculty, NULL, NULL, count(ef.student_key)"
-                		+ "from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) "
-                		+ "	join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key)"
-                		+ "	join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key"
-                		+ "where ud.university_name = 'Betty'"
-                		+ "group by cd.faculty"
-                		+ "union all"
-                		+ "select NULL, NULL, NULL, count(ef.student_key)"
-                		+ "from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) "
-                		+ "	join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key)"
-                		+ "	join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key"
-                		+ "where ud.university_name = 'Betty'"
-                		+ "order by curriculum_name, study_plan, faculty;");
+                ResultSet rs = stmt.executeQuery("select cd.faculty, cd.study_plan, cd.curriculum_name, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name = 'Betty' group by cd.faculty, cd.study_plan, cd.curriculum_name union select cd.faculty, cd.study_plan, NULL, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name = 'Betty' group by cd.faculty, cd.study_plan union all select cd.faculty, NULL, NULL, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name = 'Betty' group by cd.faculty union all select NULL, NULL, NULL, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name = 'Betty' order by curriculum_name, study_plan, faculty;");
                 
                 while (rs.next()){
                 	String faculty = rs.getString("faculty");
@@ -142,7 +120,7 @@ public class DBConnection {
                 	int count = Integer.parseInt(rs.getString("count"));
                 	incoming_students.add(new Incoming_Student(faculty, study_plan, curriculum_name, count));
                 }
-            } catch (SQLException e) {System.out.println(e);}
+            } catch (SQLException e) {System.out.println(incoming_students.size());System.out.println(e.getMessage()+e.getLocalizedMessage());}
             return incoming_students;
         }
    
@@ -170,7 +148,7 @@ public class DBConnection {
     public Vector<String> selectAllDoctors(){
     		Vector<String> allDoctors = new Vector<String>();
         	try {
-        		Statement stmt = conn.createStatement();            
+        		Statement stmt = connectionDBusers.createStatement();            
                 ResultSet rs = stmt.executeQuery("SELECT SSN, FirstName, LastName, Speciality FROM Doctor");
                 while (rs.next()){
                 	String FirstName = rs.getString("FirstName");
@@ -249,7 +227,7 @@ public class DBConnection {
     	String patientbyRoom = null;
     		//Vector<String> patientByRoom = new Vector<String>();
         	try {
-        		Statement stmt = conn.createStatement();            
+        		Statement stmt = connectionDBusers.createStatement();            
                 ResultSet rs = stmt.executeQuery("SELECT COUNT(SSN) AS asd FROM Patient WHERE R_RoomNumber ='"+room+"'");
                 while (rs.next()){
                 	String count = rs.getString("asd");
@@ -263,7 +241,7 @@ public class DBConnection {
     public Vector<String> selectPatientbyAge(String age){
     		Vector<String> patientByAge = new Vector<String>();
         	try {
-        		Statement stmt = conn.createStatement();            
+        		Statement stmt = connectionDBusers.createStatement();            
                 ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Patient WHERE Age >'"+age+"'");
                 while (rs.next()){
                 	String fname = rs.getString("FirstName");
@@ -278,7 +256,7 @@ public class DBConnection {
     public Vector<String> selectPatientsByDepartment(String department){
     		Vector<String> patientsByDepartment = new Vector<String>();
         	try {
-        		Statement stmt = conn.createStatement();          
+        		Statement stmt = connectionDBusers.createStatement();          
                 ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Patient WHERE DEP_Name='"+department+"'");
                 while (rs.next()){
                 	String fname = rs.getString("FirstName");
@@ -293,7 +271,7 @@ public class DBConnection {
     	public Vector<String> countPatientByDep(String department){
     		Vector<String> patientByDep = new Vector<String>();
         	try {
-        		Statement stmt = conn.createStatement();            
+        		Statement stmt = connectionDBusers.createStatement();            
                 ResultSet rs = stmt.executeQuery("SELECT count(SSN) as asd FROM Patient WHERE DEP_Name ='"+department+"'");
                 while (rs.next()){
                 	String count = rs.getString("asd");
@@ -307,7 +285,7 @@ public class DBConnection {
     public Vector<String> selectHasAccount(){
     		Vector<String> hasAccount = new Vector<String>();
         	try {
-        		Statement stmt = conn.createStatement();            
+        		Statement stmt = connectionDBusers.createStatement();            
                 ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Patient AS p, Account AS a WHERE p.SSN = a.PSSN");
                 while (rs.next()){
                 	String fname = rs.getString("FirstName");
@@ -356,7 +334,7 @@ public class DBConnection {
     		public Vector<String> selectDoctor(String sex){
     			Vector<String> doctor = new Vector<String>();
     	    	try {
-    	    		Statement stmt = conn.createStatement();            
+    	    		Statement stmt = connectionDBusers.createStatement();            
     	            ResultSet rs = stmt.executeQuery("SELECT * FROM Doctor WHERE Sex ='"+sex+"'");
     	            while (rs.next()){
     	            	String SSN = rs.getString("SSN");
@@ -377,7 +355,7 @@ public class DBConnection {
 	    public Vector<String> selectPatientByRoom(String room){
 	    		Vector<String> patientByRoom= new Vector<String>();
 	        	try {
-	        		Statement stmt = conn.createStatement();            
+	        		Statement stmt = connectionDBusers.createStatement();            
 	                ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Patient WHERE R_RoomNumber = '"+room+"'");
 	                while (rs.next()){
 	                	String fname = rs.getString("FirstName");
@@ -392,7 +370,7 @@ public class DBConnection {
 	    public Vector<String> selectDoctorBySpe(String speciality){
 	    		Vector<String> doctorBySpe= new Vector<String>();
 	        	try {
-	        		Statement stmt = conn.createStatement();            
+	        		Statement stmt = connectionDBusers.createStatement();            
 	                ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Doctor WHERE Speciality = '"+speciality+"'");
 	                while (rs.next()){
 	                	String fname = rs.getString("FirstName");
@@ -407,7 +385,7 @@ public class DBConnection {
     	public Vector<String> selectPatientByDate(String day){
     		Vector<String> patientByDate= new Vector<String>();
         	try {
-        		Statement stmt = conn.createStatement();            
+        		Statement stmt = connectionDBusers.createStatement();            
                 ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Patient WHERE DayIn= '"+day+"'");
                 while (rs.next()){
                 	String fname = rs.getString("FirstName");
@@ -422,7 +400,7 @@ public class DBConnection {
     	public Vector<String> selectDirectorInfo(String director){
     		Vector<String> directorInfo= new Vector<String>();
         	try {
-        		Statement stmt = conn.createStatement();            
+        		Statement stmt = connectionDBusers.createStatement();            
                 ResultSet rs = stmt.executeQuery("SELECT * FROM Department WHERE Director ='"+director+"'");
                 while (rs.next()){
                 	String fname = rs.getString("FirstName");
@@ -437,7 +415,7 @@ public class DBConnection {
 	    public Vector<String> selectNurseDetails(){
 	    		Vector<String> nurseDetails= new Vector<String>();
 	        	try {
-	        		Statement stmt = conn.createStatement();            
+	        		Statement stmt = connectionDBusers.createStatement();            
 	                ResultSet rs = stmt.executeQuery("SELECT SSN, FirstName, LastName FROM Nurse");
 	                while (rs.next()){
 	                	String fname = rs.getString("FirstName");
@@ -452,7 +430,7 @@ public class DBConnection {
     /* Query 19*/ 	
     public void selectDeletePatient(String ssn){
         	try {
-        		Statement stmt = conn.createStatement();            
+        		Statement stmt = connectionDBusers.createStatement();            
                 stmt.executeQuery("DELETE FROM Patient WHERE SSN ='"+ssn+"'");
             } catch (SQLException e) {System.out.println(e);}
         }	
@@ -461,7 +439,7 @@ public class DBConnection {
     public Vector<String> deleteClosedAccount(){
 		Vector<String> closedAccount = new Vector<String>();
     	try {
-    		Statement stmt = conn.createStatement();            
+    		Statement stmt = connectionDBusers.createStatement();            
             ResultSet rs = stmt.executeQuery("DELETE FROM Account WHERE DayClose IS NOT null");
             while (rs.next()){            	
                	closedAccount.add("All closed accoutn is deleted from the database.");
@@ -473,7 +451,7 @@ public class DBConnection {
     /*Query 21*/    
     public void insertNewDepartment(String nam, String dir){
     	try {
-    		Statement stmt = conn.createStatement();            
+    		Statement stmt = connectionDBusers.createStatement();            
             		stmt.execute("INSERT INTO Department values ('"+nam+"', '"+dir+"') ");
         } catch (SQLException e) {System.out.println(e);}
     }
@@ -482,7 +460,7 @@ public class DBConnection {
     public Vector<String> updateNewDirector(String director, String dep){
 		Vector<String> newDirector = new Vector<String>();
     	try {
-    		Statement stmt = conn.createStatement();            
+    		Statement stmt = connectionDBusers.createStatement();            
             ResultSet rs = stmt.executeQuery("UPDATE Department SET Director = '"+director+"' WHERE Name = '"+dep + "'");
             while (rs.next()){
                	newDirector.add(director+" is the new director of "+dep+ " department");
@@ -495,7 +473,7 @@ public class DBConnection {
     public Vector<String> updateNumberNurse(String floor , int num){
 		Vector<String> numberNurse = new Vector<String>();
     	try {
-    		Statement stmt = conn.createStatement();            
+    		Statement stmt = connectionDBusers.createStatement();            
             ResultSet rs = stmt.executeQuery("UPDATE Floor SET NumbernNurse = '"+num+"' WHERE FloorNumber = '"+floor + "'");
             while (rs.next()){            	
                	numberNurse.add("Now there are "+num+" nurses in Floor - "+floor);
@@ -507,7 +485,7 @@ public class DBConnection {
     /*Query 24*/
     public void insertNewFloor(String floorNumber, int rooms, int nurses){
     	try {
-    		Statement stmt = conn.createStatement();            
+    		Statement stmt = connectionDBusers.createStatement();            
             		stmt.execute("INSERT INTO Floor values ('"+floorNumber+"', '"+rooms+"', '"+nurses+"')" );
         } catch (SQLException e) {System.out.println(e);}
     }
@@ -515,7 +493,7 @@ public class DBConnection {
     /*Query 25*/
     public void insertNewDoctor(String dssn, String dfn, String dln, String dsex,String dadd, String ddate, String dspe, String ddep){
     	try {
-    		Statement stmt = conn.createStatement();            
+    		Statement stmt = connectionDBusers.createStatement();            
             		stmt.execute(" INSERT INTO Doctor values ('"+dssn+"', '"+dfn+"', '"+dln+"', '"+dsex+"', '"+dadd+"', '"+ddate+"', '"+dspe+"', '"+ddep+"') " );
         } catch (SQLException e) {System.out.println(e);}
     }
@@ -523,7 +501,7 @@ public class DBConnection {
     /*Query 26*/
 	 public void insertNewNurse(String nssn, String nfn, String nln, String nsex,String nadd, String ndate, String nfloor){
 	    	try {
-	    		Statement stmt = conn.createStatement();            
+	    		Statement stmt = connectionDBusers.createStatement();            
 	            		stmt.execute(" INSERT INTO Nurse" +
 	            							" values ('"+nssn+"', '"+nfn+"', '"+nln+"', '"+nsex+"', '"+nadd+"', '"+ndate+"', '"+nfloor+"') " );
 	        } catch (SQLException e) {System.out.println(e);}

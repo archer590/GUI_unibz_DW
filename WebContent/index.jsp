@@ -1,6 +1,5 @@
 <!DOCTYPE html>
- <jsp:useBean id="dbConn" scope="session" class="connection.DBConnection"/>
-<jsp:setProperty name="dbConn" property="*" />
+ 
 <html class="bg-black">
     <head>
         <meta charset="UTF-8">
@@ -35,7 +34,8 @@
                     <button type="submit" class="btn bg-olive btn-block">Sign me in</button>                      
                 </div>
                 
-               
+ <jsp:useBean id="dbConn" scope="session" class="connection.DBConnection"/>
+<jsp:setProperty name="dbConn" property="*" />              
     <%
 	if (!dbConn.getLogin()){
 %> 

@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<%@page import="connection.DBConnection"%>
+<%@page import="connection.Incoming_Student"%>
+<%@page import="java.util.*" %>
+ <jsp:useBean id="dbConn" scope="session" class="connection.DBConnection"/>
+<jsp:setProperty name="dbConn" property="*" />
+
 <html>
     <head>
         <meta charset="UTF-8">
@@ -56,22 +62,19 @@
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <i class="glyphicon glyphicon-user"></i>
-                                <span>Simone Tritini <i class="caret"></i></span>
+                                <span><%out.print(dbConn.getName()); %><i class="caret"></i></span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header bg-light-blue">
                                     <img src="img/avatar5.png" class="img-circle" alt="User Image" />
                                     <p>
-                                      Simone Tritini
+                                      <%out.print(dbConn.getName()); %>
                                     </p>
                                 </li>
                                                                 
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
-                                    <div class="pull-left">
-                                        <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                    </div>
                                     <div class="pull-right">
                                         <a href="#" class="btn btn-default btn-flat">Sign out</a>
                                     </div>
@@ -93,7 +96,9 @@
                             <img src="img/avatar5.png" class="img-circle" alt="User Image" />
                         </div>
                         <div class="pull-left info">
-                            <p>Hello, Simone</p>
+                            <p>Hello, <%
+                            			String[] splitted = dbConn.getName().split(" ");
+                            			out.print(splitted[0]); %></p>
                         </div>
                     </div>
                     
@@ -142,75 +147,68 @@
 
                 <!-- Main content -->
                 <section class="content">
-                    <table id="example2" class="table table-bordered table-hover dataTable" aria-describedby="example2_info">
+                
+                <div class="box-body">
+                                    <div class="box-group" id="accordion">
+                                        <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+                                        <div class="panel box box-primary">
+                                            <div class="box-header">
+                                                <h4 class="box-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="">
+                                                        Description
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseOne" class="panel-collapse collapse in">
+                                                <div class="box-body">
+													How many incoming students are there per curriculum per study plan per faculty?                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel box box-danger">
+                                            <div class="box-header">
+                                                <h4 class="box-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="collapsed">
+                                                        Query
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseTwo" class="panel-collapse collapse" style="height: 0px;">
+                                                <div class="box-body">
+<b>SELECT</b> cd.faculty, cd.study_plan, cd.curriculum_name, <b>COUNT</b>(ef.student_key)<br> <b>FROM</b> ((admt2014_unibzdw.erasmus_fact ef <b>JOIN</b> admt2014_unibzdw.student_dimension sd <b>ON</b> ef.student_key = sd.student_key)<br> <b>JOIN</b> admt2014_unibzdw.curriculum_dimension cd <b>ON</b> sd.curriculum_key = cd.curriculum_key) <br><b>JOIN</b> admt2014_unibzdw.university_dimension ud <b>ON</b> ef.university_key = ud.university_key <br><b>WHERE</b> ud.university_name = 'Betty'<br> <b>GROUP BY</b> cd.faculty, cd.study_plan, cd.curriculum_name<br> <b>UNION ALL</b> <br><b>SELECT</b> cd.faculty, cd.study_plan, NULL, <b>COUNT</b>(ef.student_key)<br> <b>FROM</b> ((admt2014_unibzdw.erasmus_fact ef <b>JOIN</b> admt2014_unibzdw.student_dimension sd <b>ON</b> ef.student_key = sd.student_key)<br> <b>JOIN</b> admt2014_unibzdw.curriculum_dimension cd <b>ON</b> sd.curriculum_key = cd.curriculum_key) <br><b>JOIN</b> admt2014_unibzdw.university_dimension ud <b>ON</b> ef.university_key = ud.university_key <br><b>WHERE</b> ud.university_name = 'Betty'<br> <b>GROUP BY</b> cd.faculty, cd.study_plan <br><b>UNION ALL</b> <br><b>SELECT</b> cd.faculty, NULL, NULL, <b>COUNT</b>(ef.student_key)<br> <b>FROM</b> ((admt2014_unibzdw.erasmus_fact ef <b>JOIN</b> admt2014_unibzdw.student_dimension sd <b>ON</b> ef.student_key = sd.student_key) <br><b>JOIN</b> admt2014_unibzdw.curriculum_dimension cd <b>ON</b> sd.curriculum_key = cd.curriculum_key)<br> <b>JOIN</b> admt2014_unibzdw.university_dimension ud <b>ON</b> ef.university_key = ud.university_key <br><b>WHERE</b> ud.university_name = 'Betty'<br> <b>GROUP BY</b> cd.faculty<br> <b>UNION ALL</b><br> <b>SELECT</b> NULL, NULL, NULL, <b>COUNT</b>(ef.student_key)<br> <b>FROM</b> ((admt2014_unibzdw.erasmus_fact ef <b>JOIN</b> admt2014_unibzdw.student_dimension sd <b>ON</b> ef.student_key = sd.student_key)<br> <b>JOIN</b> admt2014_unibzdw.curriculum_dimension cd <b>ON</b> sd.curriculum_key = cd.curriculum_key) <br><b>JOIN</b> admt2014_unibzdw.university_dimension ud <b>ON</b> ef.university_key = ud.university_key <br><b>WHERE</b> ud.university_name = 'Betty'<br> <b>ORDER BY</b> curriculum_name, study_plan, faculty;                                    </div>
+                </div>
+                </div>
+                <div class="box box-success">
+                                <div class="box-header">
+                                    <h3 class="box-title">Results</h3>
+                                </div>
+                                <div class="box-body">
+                                    <table id="rollup" class="table table-bordered table-hover dataTable" aria-describedby="example2_info">
                                         <thead>
-                                            <tr role="row"><th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Rendering engine</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Browser</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Platform(s)</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending">Engine version</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">CSS grade</th></tr>
+                                            <tr role="row"><th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Faculty</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Study Plan</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Curriculum</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending">Number</th></tr>
                                         </thead>
-                                        
+                                                                                
                                         <tfoot>
-                                            <tr><th rowspan="1" colspan="1">Rendering engine</th><th rowspan="1" colspan="1">Browser</th><th rowspan="1" colspan="1">Platform(s)</th><th rowspan="1" colspan="1">Engine version</th><th rowspan="1" colspan="1">CSS grade</th></tr>
+                                            <tr><th rowspan="1" colspan="1">Faculty</th><th rowspan="1" colspan="1">Study Plan</th><th rowspan="1" colspan="1">Currculum name</th><th rowspan="1" colspan="1">Number</th></tr>
                                         </tfoot>
-                                    <tbody role="alert" aria-live="polite" aria-relevant="all"><tr class="odd">
-                                                <td class=" sorting_1">Gecko</td>
-                                                <td class=" ">Firefox 1.0</td>
-                                                <td class=" ">Win 98+ / OSX.2+</td>
-                                                <td class=" ">1.7</td>
-                                                <td class=" ">A</td>
-                                            </tr><tr class="even">
-                                                <td class=" sorting_1">Gecko</td>
-                                                <td class=" ">Firefox 1.5</td>
-                                                <td class=" ">Win 98+ / OSX.2+</td>
-                                                <td class=" ">1.8</td>
-                                                <td class=" ">A</td>
-                                            </tr><tr class="odd">
-                                                <td class=" sorting_1">Gecko</td>
-                                                <td class=" ">Firefox 2.0</td>
-                                                <td class=" ">Win 98+ / OSX.2+</td>
-                                                <td class=" ">1.8</td>
-                                                <td class=" ">A</td>
-                                            </tr><tr class="even">
-                                                <td class=" sorting_1">Gecko</td>
-                                                <td class=" ">Firefox 3.0</td>
-                                                <td class=" ">Win 2k+ / OSX.3+</td>
-                                                <td class=" ">1.9</td>
-                                                <td class=" ">A</td>
-                                            </tr><tr class="odd">
-                                                <td class=" sorting_1">Gecko</td>
-                                                <td class=" ">Camino 1.0</td>
-                                                <td class=" ">OSX.2+</td>
-                                                <td class=" ">1.8</td>
-                                                <td class=" ">A</td>
-                                            </tr><tr class="even">
-                                                <td class=" sorting_1">Gecko</td>
-                                                <td class=" ">Camino 1.5</td>
-                                                <td class=" ">OSX.3+</td>
-                                                <td class=" ">1.8</td>
-                                                <td class=" ">A</td>
-                                            </tr><tr class="odd">
-                                                <td class=" sorting_1">Gecko</td>
-                                                <td class=" ">Netscape 7.2</td>
-                                                <td class=" ">Win 95+ / Mac OS 8.6-9.2</td>
-                                                <td class=" ">1.7</td>
-                                                <td class=" ">A</td>
-                                            </tr><tr class="even">
-                                                <td class=" sorting_1">Gecko</td>
-                                                <td class=" ">Netscape Browser 8</td>
-                                                <td class=" ">Win 98SE+</td>
-                                                <td class=" ">1.7</td>
-                                                <td class=" ">A</td>
-                                            </tr><tr class="odd">
-                                                <td class=" sorting_1">Gecko</td>
-                                                <td class=" ">Netscape Navigator 9</td>
-                                                <td class=" ">Win 98+ / OSX.2+</td>
-                                                <td class=" ">1.8</td>
-                                                <td class=" ">A</td>
-                                            </tr><tr class="even">
-                                                <td class=" sorting_1">Gecko</td>
-                                                <td class=" ">Mozilla 1.0</td>
-                                                <td class=" ">Win 95+ / OSX.1+</td>
-                                                <td class=" ">1</td>
-                                                <td class=" ">A</td>
-                                            </tr></tbody></table>
+                                        <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                        <%                                         
+                                        Vector<Incoming_Student> incoming_students = dbConn.rollup_incoming_students();                                        
+                                        for(int i=0; i<incoming_students.size();i++)
+                                        	{
+                                        	%>
+                                        	
+                                        	<tr class="odd">
+                                                <td class=" sorting_1"><%out.print(incoming_students.get(i).getFaculty()); %></td>
+                                                <td class=" "><%out.print(incoming_students.get(i).getStudy_plan()); %></td>
+                                                <td class=" "><%out.print(incoming_students.get(i).getCurriculum_name()); %></td>
+                                                <td class=" "><%out.print(incoming_students.get(i).getCount()); %></td>                                                
+                                        	</tr>
+                                        	<%
+                                        	}                                        	
+                                        	%></tbody></table>
+                                </div><!-- /.box-body -->
+                            </div>
+                    
                 </section><!-- /.content -->
 
             </aside><!-- /.right-side -->
