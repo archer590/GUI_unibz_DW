@@ -9,7 +9,6 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Simone/OneDrive/prova/postgresql-9.3-1102.jdbc3.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/postgresql-9.3-1102.jdbc3.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/postgresql-9.3-1102.jdbc3.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
