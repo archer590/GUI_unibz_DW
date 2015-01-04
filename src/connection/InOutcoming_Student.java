@@ -1,6 +1,6 @@
 package connection;
 
-public class Incoming_Student {
+public class InOutcoming_Student {
 	private String faculty = null;
 	private String study_plan = null;
 	private String curriculum_name = null;
@@ -38,7 +38,7 @@ public class Incoming_Student {
 		this.count = count;
 	}
 
-	public Incoming_Student(String f, String sp, String cn, int c){
+	public InOutcoming_Student(String f, String sp, String cn, int c){
 		faculty=f;
 		study_plan=sp;
 		curriculum_name=cn;

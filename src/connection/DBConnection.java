@@ -15,7 +15,7 @@ public class DBConnection {
     private String username = null;
     private String password = null;
     private boolean correct = true;
-    public Vector<Incoming_Student> incoming_students = new Vector<Incoming_Student>();
+    public Vector<InOutcoming_Student> inOut_students = new Vector<InOutcoming_Student>();
     
     private String name = null;
     
@@ -107,8 +107,9 @@ public class DBConnection {
     }
     
     /*ROLLUP Query*/
-    public Vector<Incoming_Student> rollup_incoming_students(){
-    		
+    public Vector<InOutcoming_Student> rollup_incoming_students(){
+    	if(!inOut_students.isEmpty())
+			inOut_students.clear();
         	try {
         		Statement stmt = conn.createStatement();            
                 ResultSet rs = stmt.executeQuery("select cd.faculty, cd.study_plan, cd.curriculum_name, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name = 'Betty' group by cd.faculty, cd.study_plan, cd.curriculum_name union select cd.faculty, cd.study_plan, NULL, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name = 'Betty' group by cd.faculty, cd.study_plan union all select cd.faculty, NULL, NULL, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name = 'Betty' group by cd.faculty union all select NULL, NULL, NULL, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name = 'Betty' order by curriculum_name, study_plan, faculty;");
@@ -118,11 +119,29 @@ public class DBConnection {
     				String study_plan = rs.getString("study_plan");
     				String curriculum_name = rs.getString("curriculum_name");
                 	int count = Integer.parseInt(rs.getString("count"));
-                	incoming_students.add(new Incoming_Student(faculty, study_plan, curriculum_name, count));
+                	inOut_students.add(new InOutcoming_Student(faculty, study_plan, curriculum_name, count));
                 }
-            } catch (SQLException e) {System.out.println(incoming_students.size());System.out.println(e.getMessage()+e.getLocalizedMessage());}
-            return incoming_students;
+            } catch (SQLException e) {System.out.println(inOut_students.size());System.out.println(e.getMessage()+e.getLocalizedMessage());}
+            return inOut_students;
         }
+    
+    public Vector<InOutcoming_Student> rollup_outgoing_students(){
+		if(!inOut_students.isEmpty())
+			inOut_students.clear();
+    	try {
+    		Statement stmt = conn.createStatement();            
+            ResultSet rs = stmt.executeQuery("select cd.faculty, cd.study_plan, cd.curriculum_name, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name != 'Betty' group by cd.faculty, cd.study_plan, cd.curriculum_name union select cd.faculty, cd.study_plan, NULL, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name != 'Betty' group by cd.faculty, cd.study_plan union all select cd.faculty, NULL, NULL, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name != 'Betty' group by cd.faculty union all select NULL, NULL, NULL, count(ef.student_key) from ((admt2014_unibzdw.erasmus_fact ef join admt2014_unibzdw.student_dimension sd on ef.student_key = sd.student_key) join admt2014_unibzdw.curriculum_dimension cd on sd.curriculum_key = cd.curriculum_key) join admt2014_unibzdw.university_dimension ud on ef.university_key = ud.university_key where ud.university_name != 'Betty' order by curriculum_name, study_plan, faculty;");
+            
+            while (rs.next()){
+            	String faculty = rs.getString("faculty");
+				String study_plan = rs.getString("study_plan");
+				String curriculum_name = rs.getString("curriculum_name");
+            	int count = Integer.parseInt(rs.getString("count"));
+            	inOut_students.add(new InOutcoming_Student(faculty, study_plan, curriculum_name, count));
+            }
+        } catch (SQLException e) {System.out.println(inOut_students.size());System.out.println(e.getMessage()+e.getLocalizedMessage());}
+        return inOut_students;
+    }
    
     
     

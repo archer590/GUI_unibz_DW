@@ -126,7 +126,8 @@
                                 <i class="fa fa-angle-left pull-right"></i>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="rollup.jsp"><i class="fa fa-angle-double-right"></i>ROLLUP</a></li>
+                                <li><a href="incoming.jsp"><i class="fa fa-angle-double-right"></i>Incoming students</a></li>
+                                <li><a href="outgoing.jsp"><i class="fa fa-angle-double-right"></i>Outgoing students</a></li>
                                 <li><a href="grouping_id.jsp"><i class="fa fa-angle-double-right"></i>GROUPING_ID</a></li>
                                 <li><a href="ranking.jsp"><i class="fa fa-angle-double-right"></i>Rank</a></li>
                                 <li><a href="windowing.jsp"><i class="fa fa-angle-double-right"></i>Windowing</a></li>

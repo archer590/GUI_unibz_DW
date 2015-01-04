@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <%@page import="connection.DBConnection"%>
-<%@page import="connection.Incoming_Student"%>
+<%@page import="connection.InOutcoming_Student"%>
 <%@page import="java.util.*" %>
  <jsp:useBean id="dbConn" scope="session" class="connection.DBConnection"/>
 <jsp:setProperty name="dbConn" property="*" />
@@ -62,14 +62,18 @@
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <i class="glyphicon glyphicon-user"></i>
-                                <span><%out.print(dbConn.getName()); %><i class="caret"></i></span>
+                                <span><%
+                                	out.print(dbConn.getName());
+                                %><i class="caret"></i></span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header bg-light-blue">
                                     <img src="img/avatar5.png" class="img-circle" alt="User Image" />
                                     <p>
-                                      <%out.print(dbConn.getName()); %>
+                                      <%
+                                      	out.print(dbConn.getName());
+                                      %>
                                     </p>
                                 </li>
                                                                 
@@ -97,8 +101,9 @@
                         </div>
                         <div class="pull-left info">
                             <p>Hello, <%
-                            			String[] splitted = dbConn.getName().split(" ");
-                            			out.print(splitted[0]); %></p>
+                            	String[] splitted = dbConn.getName().split(" ");
+                                                        			out.print(splitted[0]);
+                            %></p>
                         </div>
                     </div>
                     
@@ -117,7 +122,8 @@
                                 <i class="fa fa-angle-left pull-right"></i>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="rollup.jsp"><i class="fa fa-angle-double-right"></i>ROLLUP</a></li>
+                                <li><a href="incoming.jsp"><i class="fa fa-angle-double-right"></i>Incoming students</a></li>
+                                <li><a href="outgoing.jsp"><i class="fa fa-angle-double-right"></i>Outgoing students</a></li>
                                 <li><a href="grouping_id.jsp"><i class="fa fa-angle-double-right"></i>GROUPING_ID</a></li>
                                 <li><a href="ranking.jsp"><i class="fa fa-angle-double-right"></i>Rank</a></li>
                                 <li><a href="windowing.jsp"><i class="fa fa-angle-double-right"></i>Windowing</a></li>
@@ -135,13 +141,13 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        ROLLUP
+                        Incoming students
                         <small>Query details</small>
                     </h1>
                     <ol class="breadcrumb">
                         <li><a href="index.jsp"><i class="fa fa-dashboard"></i> Home</a></li>
                         <li >Queries</li>
-                        <li class="active">ROLLUP</li>
+                        <li class="active">Incoming students</li>
                     </ol>
                 </section>
 
@@ -160,8 +166,11 @@
                                                 </h4>
                                             </div>
                                             <div id="collapseOne" class="panel-collapse collapse in">
-                                                <div class="box-body">
-													How many incoming students are there per curriculum per study plan per faculty?                                                </div>
+                                                <div class="box-body">                                                
+													How many incoming students are there per curriculum per study plan per faculty? 
+													<br> 
+													Using <b>ROLLUP</b> tecnique.
+												</div>
                                             </div>
                                         </div>
                                         <div class="panel box box-danger">
@@ -191,11 +200,11 @@
                                             <tr><th rowspan="1" colspan="1">Faculty</th><th rowspan="1" colspan="1">Study Plan</th><th rowspan="1" colspan="1">Currculum name</th><th rowspan="1" colspan="1">Number</th></tr>
                                         </tfoot>
                                         <tbody role="alert" aria-live="polite" aria-relevant="all">
-                                        <%                                         
-                                        Vector<Incoming_Student> incoming_students = dbConn.rollup_incoming_students();                                        
-                                        for(int i=0; i<incoming_students.size();i++)
-                                        	{
-                                        	%>
+                                        <%
+                                        	Vector<InOutcoming_Student> incoming_students = dbConn.rollup_incoming_students();                                        
+                                                                                for(int i=0; i<incoming_students.size();i++)
+                                                                                	{
+                                        %>
                                         	
                                         	<tr class="odd">
                                                 <td class=" sorting_1"><%out.print(incoming_students.get(i).getFaculty()); %></td>
