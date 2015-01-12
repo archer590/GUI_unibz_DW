@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<%@page import="connection.DBConnection"%>
+<%@page import="connection.Enrollment"%>
+<%@page import="java.util.*" %>
+ <jsp:useBean id="dbConn" scope="session" class="connection.DBConnection"/>
+<jsp:setProperty name="dbConn" property="*" />
 <html>
     <head>
         <meta charset="UTF-8">
@@ -112,7 +117,8 @@
                                 <i class="fa fa-angle-left pull-right"></i>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="rollup.jsp"><i class="fa fa-angle-double-right"></i>ROLLUP</a></li>
+                                <li><a href="incoming.jsp"><i class="fa fa-angle-double-right"></i>Incoming students</a></li>
+                                <li><a href="outgoing.jsp"><i class="fa fa-angle-double-right"></i>Outgoing students</a></li>
                                 <li><a href="grouping_id.jsp"><i class="fa fa-angle-double-right"></i>GROUPING_ID</a></li>
                                 <li><a href="ranking.jsp"><i class="fa fa-angle-double-right"></i>Rank</a></li>
                                 <li><a href="windowing.jsp"><i class="fa fa-angle-double-right"></i>Windowing</a></li>
@@ -130,7 +136,7 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Period-To-Period
+                        Comparison enrolled students
                         <small>Query details</small>
                     </h1>
                     <ol class="breadcrumb">
@@ -142,7 +148,77 @@
 
                 <!-- Main content -->
                 <section class="content">
-                    
+                     <div class="box-body">
+                                    <div class="box-group" id="accordion">
+                                        <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+                                        <div class="panel box box-primary">
+                                            <div class="box-header">
+                                                <h4 class="box-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="">
+                                                        Description
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseOne" class="panel-collapse collapse in">
+                                                <div class="box-body">                                                
+													Which is the difference of the enrolled students between years 2013 and 2014? 
+													<br> 
+													Using <b>Period-to-Period</b> query tecnique.
+												</div>
+                                            </div>
+                                        </div>
+                                        <div class="panel box box-danger">
+                                            <div class="box-header">
+                                                <h4 class="box-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="collapsed">
+                                                        Query
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseTwo" class="panel-collapse collapse" style="height: 0px;">
+                                                <div class="box-body">
+<b>SELECT</b> count(sd.student_key), sd.enrollment_year<br> <b>FROM</b> admt2014_unibzdw.student_dimension sd<br> <b>WHERE</b> sd.enrollment_year='2014' <b>OR</b> sd.enrollment_year='2013'<br> <b>GROUP BY</b> sd.enrollment_year<br> <b>UNION ALL</b> <br><b>SELECT</b> (<b>SELECT</b> <b>COUNT</b>(ssd.student_key)<br> <b>FROM</b> admt2014_unibzdw.student_dimension ssd<br> <b>WHERE</b> ssd.enrollment_year='2013') - (<b>SELECT</b> <b>COUNT</b>(ssd.student_key)<br> <b>FROM</b> admt2014_unibzdw.student_dimension ssd<br> <b>WHERE</b> ssd.enrollment_year='2014'), NULL;                                   </div>
+                </div>
+                </div>
+                <div class="box box-success">
+                                <div class="box-header">
+                                    <h3 class="box-title">Results</h3>
+                                </div>
+                                <div class="box-body">
+                                    <table id="rollup" class="table table-bordered table-hover dataTable" aria-describedby="example2_info">
+                                        <thead>
+                                            <tr role="row"><th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Students</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Enrollment Year</th></tr>
+                                        </thead>
+                                                                                
+                                        <tfoot>
+                                            <tr><th rowspan="1" colspan="1">Students</th><th rowspan="1" colspan="1">Enrollment Year</th></tr>
+                                        </tfoot>
+                                        <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                        <%
+                                        	Vector<Enrollment> enrolled_stud = dbConn.camparison_enrollment_year(); 
+                                        int diff = 0;
+                                                                                for(int i=0; i<enrolled_stud.size();i++)
+                                                                                	{
+                                                                                	if(enrolled_stud.get(i).getYear()!=0){
+                                        %>
+                                        	
+                                        	<tr class="odd">
+                                                <td class=" sorting_1"><%out.print(enrolled_stud.get(i).getStudents()); %></td>
+                                                <td class=" "><%out.print(enrolled_stud.get(i).getYear()); }
+                                                                                	else
+                                                                                		diff = enrolled_stud.get(i).getStudents();
+                                                
+                                                %></td>                                                                                               
+                                        	</tr>
+                                        	<%
+                                        	}                                        	
+                                        	%></tbody></table>
+                                        	<br>
+                                        	The difference between year 2013 and 2014 is: <b><%out.print(Math.abs(diff));%></b>.
+                                </div><!-- /.box-body -->
+                            </div>
+                            </div>
+                            </div>
                 </section><!-- /.content -->
                 
             </aside><!-- /.right-side -->

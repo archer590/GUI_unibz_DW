@@ -16,6 +16,7 @@ public class DBConnection {
     private String password = null;
     private boolean correct = true;
     public Vector<InOutcoming_Student> inOut_students = new Vector<InOutcoming_Student>();
+    public Vector<Enrollment> enrolled = new Vector<Enrollment>();
     
     private String name = null;
     
@@ -143,7 +144,21 @@ public class DBConnection {
         return inOut_students;
     }
    
-    
+    public Vector<Enrollment> camparison_enrollment_year(){
+		if(!enrolled.isEmpty())
+			enrolled.clear();
+    	try {
+    		Statement stmt = conn.createStatement();            
+            ResultSet rs = stmt.executeQuery("SELECT count(sd.student_key) as students, sd.enrollment_year FROM admt2014_unibzdw.student_dimension sd where sd.enrollment_year='2014' or sd.enrollment_year='2013' group by sd.enrollment_year union all SELECT (SELECT count(ssd.student_key) FROM admt2014_unibzdw.student_dimension ssd where ssd.enrollment_year='2013') - (SELECT count(ssd.student_key) FROM admt2014_unibzdw.student_dimension ssd where ssd.enrollment_year='2014'), NULL;");
+            
+            while (rs.next()){
+            	int students = rs.getInt("students");
+				int year = rs.getInt("enrollment_year");				
+            	enrolled.add(new Enrollment(year, students));
+            }
+        } catch (SQLException e) {System.out.println(enrolled.size());System.out.println(e.getMessage()+e.getLocalizedMessage());}
+        return enrolled;
+    }
     
     
     
