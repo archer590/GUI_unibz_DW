@@ -38,8 +38,12 @@
         <!-- header logo: style can be found in header.less -->
         <header class="header">
             <a href="index.jsp" class="logo">
+            <div class="icon">
+                                    <i class="ion-university"></i>
+                                    uniwarehouse
+                                </div>
                 <!-- Add the class icon to your logo image or logo icon to add the margining -->
-                uniwarehouse
+                
             </a>
             <!-- Header Navbar: style can be found in header.less -->
             <nav class="navbar navbar-static-top" role="navigation">
@@ -59,28 +63,7 @@
                         <!-- Tasks: style can be found in dropdown.less -->
                         
                         <!-- User Account: style can be found in dropdown.less -->
-                        <li class="dropdown user user-menu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="glyphicon glyphicon-user"></i>
-                                <span><%out.print(dbConn.getName()); %><i class="caret"></i></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <!-- User image -->
-                                <li class="user-header bg-light-blue">
-                                    <img src="img/avatar5.png" class="img-circle" alt="User Image" />
-                                    <p>
-                                      <%out.print(dbConn.getName()); %>
-                                    </p>
-                                </li>
-                                                                
-                                <!-- Menu Footer-->
-                                <li class="user-footer">
-                                    <div class="pull-right">
-                                        <a href="#" class="btn btn-default btn-flat">Sign out</a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
+                        
                     </ul>
                 </div>
             </nav>
@@ -91,17 +74,7 @@
                 <!-- sidebar: style can be found in sidebar.less -->
                 <section class="sidebar">
                     <!-- Sidebar user panel -->
-                    <div class="user-panel">
-                        <div class="pull-left image">
-                            <img src="img/avatar5.png" class="img-circle" alt="User Image" />
-                        </div>
-                        <div class="pull-left info">
-                            <p>Hello, <%
-                            			String[] splitted = dbConn.getName().split(" ");
-                            			out.print(splitted[0]); %></p>
-                        </div>
-                    </div>
-                    
+                                        
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
                         <li class="active">
@@ -119,10 +92,13 @@
                             <ul class="treeview-menu">
                                 <li><a href="incoming.jsp"><i class="fa fa-angle-double-right"></i>Incoming students</a></li>
                                 <li><a href="outgoing.jsp"><i class="fa fa-angle-double-right"></i>Outgoing students</a></li>
-                                <li><a href="grouping_id.jsp"><i class="fa fa-angle-double-right"></i>GROUPING_ID</a></li>
-                                <li><a href="ranking.jsp"><i class="fa fa-angle-double-right"></i>Rank</a></li>
-                                <li><a href="windowing.jsp"><i class="fa fa-angle-double-right"></i>Windowing</a></li>
-                                <li><a href="ptop.jsp"><i class="fa fa-angle-double-right"></i>Period-To-Period</a></li>
+                                <li><a href="grouping_id.jsp"><i class="fa fa-angle-double-right"></i>Internships in company</a></li>
+                                <li><a href="ranking.jsp"><i class="fa fa-angle-double-right"></i>Internships salary</a></li>
+                                <li><a href="windowing.jsp"><i class="fa fa-angle-double-right"></i>Internships per month</a></li>
+                                <li><a href="ptop.jsp"><i class="fa fa-angle-double-right"></i>Enrollements</a></li>
+                                <li><a href="lattice3.jsp"><i class="fa fa-angle-double-right"></i>Graduations year/study plan</a></li>
+                                <li><a href="lattice2.jsp"><i class="fa fa-angle-double-right"></i>Graduations year/faculty</a></li>
+                                <li><a href="lattice.jsp"><i class="fa fa-angle-double-right"></i>Graduations faculty/supervisor</a></li>
                             </ul>
                         </li>
                         
@@ -136,7 +112,7 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Incoming students
+                        Internships in a company
                         <small>Query details</small>
                     </h1>
                     <ol class="breadcrumb">
@@ -162,9 +138,9 @@
                                             </div>
                                             <div id="collapseOne" class="panel-collapse collapse in">
                                                 <div class="box-body">                                                
-													How many incoming students are there per curriculum per study plan per faculty? 
+													How many students did an internship in a company per faculty per study plan?
 													<br> 
-													Using <b>ROLLUP</b> tecnique.
+													Using <b>GROUPING-ID</b> tecnique.
 												</div>
                                             </div>
                                         </div>
@@ -178,40 +154,15 @@
                                             </div>
                                             <div id="collapseTwo" class="panel-collapse collapse" style="height: 0px;">
                                                 <div class="box-body">
-<b>SELECT</b> cd.faculty, cd.study_plan, cd.curriculum_name, <b>COUNT</b>(ef.student_key)<br> <b>FROM</b> ((admt2014_unibzdw.erasmus_fact ef <b>JOIN</b> admt2014_unibzdw.student_dimension sd <b>ON</b> ef.student_key = sd.student_key)<br> <b>JOIN</b> admt2014_unibzdw.curriculum_dimension cd <b>ON</b> sd.curriculum_key = cd.curriculum_key) <br><b>JOIN</b> admt2014_unibzdw.university_dimension ud <b>ON</b> ef.university_key = ud.university_key <br><b>WHERE</b> ud.university_name = 'Betty'<br> <b>GROUP BY</b> cd.faculty, cd.study_plan, cd.curriculum_name<br> <b>UNION ALL</b> <br><b>SELECT</b> cd.faculty, cd.study_plan, NULL, <b>COUNT</b>(ef.student_key)<br> <b>FROM</b> ((admt2014_unibzdw.erasmus_fact ef <b>JOIN</b> admt2014_unibzdw.student_dimension sd <b>ON</b> ef.student_key = sd.student_key)<br> <b>JOIN</b> admt2014_unibzdw.curriculum_dimension cd <b>ON</b> sd.curriculum_key = cd.curriculum_key) <br><b>JOIN</b> admt2014_unibzdw.university_dimension ud <b>ON</b> ef.university_key = ud.university_key <br><b>WHERE</b> ud.university_name = 'Betty'<br> <b>GROUP BY</b> cd.faculty, cd.study_plan <br><b>UNION ALL</b> <br><b>SELECT</b> cd.faculty, NULL, NULL, <b>COUNT</b>(ef.student_key)<br> <b>FROM</b> ((admt2014_unibzdw.erasmus_fact ef <b>JOIN</b> admt2014_unibzdw.student_dimension sd <b>ON</b> ef.student_key = sd.student_key) <br><b>JOIN</b> admt2014_unibzdw.curriculum_dimension cd <b>ON</b> sd.curriculum_key = cd.curriculum_key)<br> <b>JOIN</b> admt2014_unibzdw.university_dimension ud <b>ON</b> ef.university_key = ud.university_key <br><b>WHERE</b> ud.university_name = 'Betty'<br> <b>GROUP BY</b> cd.faculty<br> <b>UNION ALL</b><br> <b>SELECT</b> NULL, NULL, NULL, <b>COUNT</b>(ef.student_key)<br> <b>FROM</b> ((admt2014_unibzdw.erasmus_fact ef <b>JOIN</b> admt2014_unibzdw.student_dimension sd <b>ON</b> ef.student_key = sd.student_key)<br> <b>JOIN</b> admt2014_unibzdw.curriculum_dimension cd <b>ON</b> sd.curriculum_key = cd.curriculum_key) <br><b>JOIN</b> admt2014_unibzdw.university_dimension ud <b>ON</b> ef.university_key = ud.university_key <br><b>WHERE</b> ud.university_name = 'Betty'<br> <b>ORDER BY</b> curriculum_name, study_plan, faculty;                                    </div>
+<b>SELECT</b> <b>CASE</b> <b>WHEN GROUPING_ID</b>(cd.faculty)=1 <b>THEN</b> "*" <b>ELSE</b> cd.faculty <b>END</b>,
+		<b>CASE WHEN GROUPING_ID</b>(cd.study_plan)=1 <b>THEN</b> "*" <b>ELSE</b> cd.study_plan <b>END</b>,
+ 		<b>COUNT</b>(intf.student_key)
+<br><b>FROM</b> ((admt2014_unibzdw.internship_fact intf <b>JOIN</b> admt2014_unibzdw.student_dimension sd <b>ON</b> intf.student_key = sd.student_key) 
+	<br><b>JOIN</b> admt2014_unibzdw.curriculum_dimension cd <b>ON</b> sd.curriculum_key = cd.curriculum_key)
+	<b>JOIN</b> admt2014_unibzdw.company_dimension cpd <b>ON</b> intf.company_key = cpd.company_key
+<br><b>WHERE</b> cpd.name != 'UNIBZ'
+<b>GROUP BY</b> cd.faculty, cd.study_plan <b>WITH ROLLUP</b>;                </div>
                 </div>
-                </div>
-                <div class="box box-success">
-                                <div class="box-header">
-                                    <h3 class="box-title">Results</h3>
-                                </div>
-                                <div class="box-body">
-                                    <table id="rollup" class="table table-bordered table-hover dataTable" aria-describedby="example2_info">
-                                        <thead>
-                                            <tr role="row"><th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Faculty</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Study Plan</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Curriculum</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending">Number</th></tr>
-                                        </thead>
-                                                                                
-                                        <tfoot>
-                                            <tr><th rowspan="1" colspan="1">Faculty</th><th rowspan="1" colspan="1">Study Plan</th><th rowspan="1" colspan="1">Currculum name</th><th rowspan="1" colspan="1">Number</th></tr>
-                                        </tfoot>
-                                        <tbody role="alert" aria-live="polite" aria-relevant="all">
-                                        <%                                         
-                                        Vector<InOutcoming_Student> incoming_students = dbConn.rollup_incoming_students();                                        
-                                        for(int i=0; i<incoming_students.size();i++)
-                                        	{
-                                        	%>
-                                        	
-                                        	<tr class="odd">
-                                                <td class=" sorting_1"><%out.print(incoming_students.get(i).getFaculty()); %></td>
-                                                <td class=" "><%out.print(incoming_students.get(i).getStudy_plan()); %></td>
-                                                <td class=" "><%out.print(incoming_students.get(i).getCurriculum_name()); %></td>
-                                                <td class=" "><%out.print(incoming_students.get(i).getCount()); %></td>                                                
-                                        	</tr>
-                                        	<%
-                                        	}                                        	
-                                        	%></tbody></table>
-                                </div><!-- /.box-body -->
-                            </div>
                     
                 </section><!-- /.content -->
 

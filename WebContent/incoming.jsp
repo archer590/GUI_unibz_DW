@@ -38,8 +38,12 @@
         <!-- header logo: style can be found in header.less -->
         <header class="header">
             <a href="index.jsp" class="logo">
+            <div class="icon">
+                                    <i class="ion-university"></i>
+                                    uniwarehouse
+                                </div>
                 <!-- Add the class icon to your logo image or logo icon to add the margining -->
-                uniwarehouse
+                
             </a>
             <!-- Header Navbar: style can be found in header.less -->
             <nav class="navbar navbar-static-top" role="navigation">
@@ -59,32 +63,7 @@
                         <!-- Tasks: style can be found in dropdown.less -->
                         
                         <!-- User Account: style can be found in dropdown.less -->
-                        <li class="dropdown user user-menu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="glyphicon glyphicon-user"></i>
-                                <span><%
-                                	out.print(dbConn.getName());
-                                %><i class="caret"></i></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <!-- User image -->
-                                <li class="user-header bg-light-blue">
-                                    <img src="img/avatar5.png" class="img-circle" alt="User Image" />
-                                    <p>
-                                      <%
-                                      	out.print(dbConn.getName());
-                                      %>
-                                    </p>
-                                </li>
-                                                                
-                                <!-- Menu Footer-->
-                                <li class="user-footer">
-                                    <div class="pull-right">
-                                        <a href="#" class="btn btn-default btn-flat">Sign out</a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
+                        
                     </ul>
                 </div>
             </nav>
@@ -95,17 +74,7 @@
                 <!-- sidebar: style can be found in sidebar.less -->
                 <section class="sidebar">
                     <!-- Sidebar user panel -->
-                    <div class="user-panel">
-                        <div class="pull-left image">
-                            <img src="img/avatar5.png" class="img-circle" alt="User Image" />
-                        </div>
-                        <div class="pull-left info">
-                            <p>Hello, <%
-                            	String[] splitted = dbConn.getName().split(" ");
-                                                        			out.print(splitted[0]);
-                            %></p>
-                        </div>
-                    </div>
+                    
                     
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
@@ -124,10 +93,13 @@
                             <ul class="treeview-menu">
                                 <li><a href="incoming.jsp"><i class="fa fa-angle-double-right"></i>Incoming students</a></li>
                                 <li><a href="outgoing.jsp"><i class="fa fa-angle-double-right"></i>Outgoing students</a></li>
-                                <li><a href="grouping_id.jsp"><i class="fa fa-angle-double-right"></i>GROUPING_ID</a></li>
-                                <li><a href="ranking.jsp"><i class="fa fa-angle-double-right"></i>Rank</a></li>
-                                <li><a href="windowing.jsp"><i class="fa fa-angle-double-right"></i>Windowing</a></li>
-                                <li><a href="ptop.jsp"><i class="fa fa-angle-double-right"></i>Period-To-Period</a></li>
+                                <li><a href="grouping_id.jsp"><i class="fa fa-angle-double-right"></i>Internships in company</a></li>
+                                <li><a href="ranking.jsp"><i class="fa fa-angle-double-right"></i>Internships salary</a></li>
+                                <li><a href="windowing.jsp"><i class="fa fa-angle-double-right"></i>Internships per month</a></li>
+                                <li><a href="ptop.jsp"><i class="fa fa-angle-double-right"></i>Enrollements</a></li>
+                                <li><a href="lattice3.jsp"><i class="fa fa-angle-double-right"></i>Graduations year/study plan</a></li>
+                                <li><a href="lattice2.jsp"><i class="fa fa-angle-double-right"></i>Graduations year/faculty</a></li>
+                                <li><a href="lattice.jsp"><i class="fa fa-angle-double-right"></i>Graduations faculty/supervisor</a></li>
                             </ul>
                         </li>
                         

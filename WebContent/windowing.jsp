@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<%@page import="connection.DBConnection"%>
+<%@page import="connection.Internship"%>
+<%@page import="java.util.*" %>
+ <jsp:useBean id="dbConn" scope="session" class="connection.DBConnection"/>
+<jsp:setProperty name="dbConn" property="*" />
 <html>
     <head>
         <meta charset="UTF-8">
@@ -32,8 +37,12 @@
         <!-- header logo: style can be found in header.less -->
         <header class="header">
             <a href="index.jsp" class="logo">
+            <div class="icon">
+                                    <i class="ion-university"></i>
+                                    uniwarehouse
+                                </div>
                 <!-- Add the class icon to your logo image or logo icon to add the margining -->
-                uniwarehouse
+                
             </a>
             <!-- Header Navbar: style can be found in header.less -->
             <nav class="navbar navbar-static-top" role="navigation">
@@ -53,32 +62,7 @@
                         <!-- Tasks: style can be found in dropdown.less -->
                         
                         <!-- User Account: style can be found in dropdown.less -->
-                        <li class="dropdown user user-menu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="glyphicon glyphicon-user"></i>
-                                <span>Simone Tritini <i class="caret"></i></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <!-- User image -->
-                                <li class="user-header bg-light-blue">
-                                    <img src="img/avatar5.png" class="img-circle" alt="User Image" />
-                                    <p>
-                                      Simone Tritini
-                                    </p>
-                                </li>
-                                                                
-                                <!-- Menu Footer-->
-                                <li class="user-footer">
-                                    <div class="pull-left">
-                                        <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                    </div>
-                                    <div class="pull-right">
-                                        <a href="#" class="btn btn-default btn-flat">Sign out</a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+                        </ul>
                 </div>
             </nav>
         </header>
@@ -88,15 +72,7 @@
                 <!-- sidebar: style can be found in sidebar.less -->
                 <section class="sidebar">
                     <!-- Sidebar user panel -->
-                    <div class="user-panel">
-                        <div class="pull-left image">
-                            <img src="img/avatar5.png" class="img-circle" alt="User Image" />
-                        </div>
-                        <div class="pull-left info">
-                            <p>Hello, Simone</p>
-                        </div>
-                    </div>
-                    
+                                        
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
                         <li class="active">
@@ -112,11 +88,15 @@
                                 <i class="fa fa-angle-left pull-right"></i>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="rollup.jsp"><i class="fa fa-angle-double-right"></i>ROLLUP</a></li>
-                                <li><a href="grouping_id.jsp"><i class="fa fa-angle-double-right"></i>GROUPING_ID</a></li>
-                                <li><a href="ranking.jsp"><i class="fa fa-angle-double-right"></i>Rank</a></li>
-                                <li><a href="windowing.jsp"><i class="fa fa-angle-double-right"></i>Windowing</a></li>
-                                <li><a href="ptop.jsp"><i class="fa fa-angle-double-right"></i>Period-To-Period</a></li>
+                                <li><a href="incoming.jsp"><i class="fa fa-angle-double-right"></i>Incoming students</a></li>
+                                <li><a href="outgoing.jsp"><i class="fa fa-angle-double-right"></i>Outgoing students</a></li>
+                                <li><a href="grouping_id.jsp"><i class="fa fa-angle-double-right"></i>Internships in company</a></li>
+                                <li><a href="ranking.jsp"><i class="fa fa-angle-double-right"></i>Internships salary</a></li>
+                                <li><a href="windowing.jsp"><i class="fa fa-angle-double-right"></i>Internships per month</a></li>
+                                <li><a href="ptop.jsp"><i class="fa fa-angle-double-right"></i>Enrollements</a></li>
+                                <li><a href="lattice3.jsp"><i class="fa fa-angle-double-right"></i>Graduations year/study plan</a></li>
+                                <li><a href="lattice2.jsp"><i class="fa fa-angle-double-right"></i>Graduations year/faculty</a></li>
+                                <li><a href="lattice.jsp"><i class="fa fa-angle-double-right"></i>Graduations faculty/supervisor</a></li>
                             </ul>
                         </li>
                         
@@ -143,6 +123,71 @@
                 <!-- Main content -->
                 <section class="content">
                     
+                <div class="box-body">
+                                    <div class="box-group" id="accordion">
+                                        <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+                                        <div class="panel box box-primary">
+                                            <div class="box-header">
+                                                <h4 class="box-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="">
+                                                        Description
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseOne" class="panel-collapse collapse in">
+                                                <div class="box-body">                                                
+												Which is the the number of internship taken in 2012 for each month, the month before and the month after? 
+													<br> 
+													Using <b>windowing</b> tecnique.
+												</div>
+                                            </div>
+                                        </div>
+                                        <div class="panel box box-danger">
+                                            <div class="box-header">
+                                                <h4 class="box-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="collapsed">
+                                                        Query
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseTwo" class="panel-collapse collapse" style="height: 0px;">
+                                                <div class="box-body">
+<b>SELECT</b> dd.month, <b>COUNT</b>(inf.student_key) <b>AS</b> total, <b>LAG</b>(<b>COUNT</b>(inf.student_key),1) <b>OVER</b> (<b>ORDER BY</b> dd.month), <b>LEAD</b>(<b>COUNT</b>(inf.student_key),1) <b>OVER</b> (<b>ORDER BY</b> dd.month)<br> <b>FROM</b> admt2014_unibzdw.internship_fact inf join admt2014_unibzdw.date_dimension dd <b>ON</b> inf.start_date_key=dd.date_key <br><b>WHERE</b> year='2012' <br><b>GROUP BY</b> dd.month;                </div>
+                </div></div>
+                <div class="box box-success">
+                                <div class="box-header">
+                                    <h3 class="box-title">Results</h3>
+                                </div>
+                                <div class="box-body">
+                                    <table id="rollup" class="table table-bordered table-hover dataTable" aria-describedby="example2_info">
+                                        <thead>
+                                            <tr role="row"><th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Month</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Month before</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Month after</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending">Students</th></tr>
+                                        </thead>
+                                                                                
+                                        <tfoot>
+                                            <tr><th rowspan="1" colspan="1">Month</th><th rowspan="1" colspan="1">Months before</th><th rowspan="1" colspan="1">Months after</th><th rowspan="1" colspan="1">Students</th></tr>
+                                        </tfoot>
+                                        <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                        <%
+                                        	Vector<Internship> i_ships = dbConn.windowing();                                        
+                                                                                for(int i=0; i<i_ships.size();i++)
+                                                                                	{
+                                        %>
+                                        	
+                                        	<tr class="odd">
+                                                <td class=" sorting_1"><%out.print(i_ships.get(i).getMonth()); %></td>
+                                                <td class=" "><%out.print(i_ships.get(i).getLag_month()); %></td>
+                                                <td class=" "><%out.print(i_ships.get(i).getLead_month()); %></td>
+                                                <td class=" "><%out.print(i_ships.get(i).getStudents()); %></td>                                                
+                                        	</tr>
+                                        	<%
+                                        	}                                        	
+                                        	%></tbody></table>
+                                </div><!-- /.box-body -->
+                            </div>
+                            </div>
+                            </div>
+                            
                 </section><!-- /.content -->
 
             </aside><!-- /.right-side -->

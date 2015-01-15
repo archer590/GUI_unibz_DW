@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <%@page import="connection.DBConnection"%>
-<%@page import="connection.Enrollment"%>
+<%@page import="connection.Graduation"%>
 <%@page import="java.util.*" %>
  <jsp:useBean id="dbConn" scope="session" class="connection.DBConnection"/>
 <jsp:setProperty name="dbConn" property="*" />
@@ -36,7 +36,7 @@
     <body class="skin-blue">
         <!-- header logo: style can be found in header.less -->
         <header class="header">
-           <a href="index.jsp" class="logo">
+            <a href="index.jsp" class="logo">
             <div class="icon">
                                     <i class="ion-university"></i>
                                     uniwarehouse
@@ -62,8 +62,7 @@
                         <!-- Tasks: style can be found in dropdown.less -->
                         
                         <!-- User Account: style can be found in dropdown.less -->
-                        
-                    </ul>
+                        </ul>
                 </div>
             </nav>
         </header>
@@ -105,25 +104,26 @@
                 </section>
                 <!-- /.sidebar -->
             </aside>
-
             <!-- Right side column. Contains the navbar and content of the page -->
             <aside class="right-side">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Comparison enrolled students
+                        Graduations year/faculty
                         <small>Query details</small>
                     </h1>
                     <ol class="breadcrumb">
                         <li><a href="index.jsp"><i class="fa fa-dashboard"></i> Home</a></li>
                         <li >Queries</li>
-                        <li class="active">Period-To-Period</li>
+                        <li class="active">Graduation</li>
                     </ol>
                 </section>
 
                 <!-- Main content -->
                 <section class="content">
-                     <div class="box-body">
+                
+                
+<div class="box-body">
                                     <div class="box-group" id="accordion">
                                         <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
                                         <div class="panel box box-primary">
@@ -136,26 +136,48 @@
                                             </div>
                                             <div id="collapseOne" class="panel-collapse collapse in">
                                                 <div class="box-body">                                                
-													Which is the difference of the enrolled students between years 2013 and 2014? 
+													Which is the total number of degreed students per year and per faculty? 
 													<br> 
-													Using <b>Period-to-Period</b> query tecnique.
+													Using <b>lattice framework</b> tecnique.
 												</div>
                                             </div>
                                         </div>
-                                        <div class="panel box box-danger">
+                                        
+                                        <div class="panel box box-warning">
                                             <div class="box-header">
                                                 <h4 class="box-title">
                                                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="collapsed">
-                                                        Query
+                                                        View
                                                     </a>
                                                 </h4>
                                             </div>
                                             <div id="collapseTwo" class="panel-collapse collapse" style="height: 0px;">
                                                 <div class="box-body">
-<b>SELECT</b> count(sd.student_key), sd.enrollment_year<br> <b>FROM</b> admt2014_unibzdw.student_dimension sd<br> <b>WHERE</b> sd.enrollment_year='2014' <b>OR</b> sd.enrollment_year='2013'<br> <b>GROUP BY</b> sd.enrollment_year<br> <b>UNION ALL</b> <br><b>SELECT</b> (<b>SELECT</b> <b>COUNT</b>(ssd.student_key)<br> <b>FROM</b> admt2014_unibzdw.student_dimension ssd<br> <b>WHERE</b> ssd.enrollment_year='2013') - (<b>SELECT</b> <b>COUNT</b>(ssd.student_key)<br> <b>FROM</b> admt2014_unibzdw.student_dimension ssd<br> <b>WHERE</b> ssd.enrollment_year='2014'), NULL;                                   </div>
-                </div>
-                </div>
-                <div class="col-md-6">
+<b>CREATE MATERIALIZED VIEW</b> admt2014_unibzdw.degreed_year_faculty <b>AS</b>
+	<br><b>SELECT</b> sd.status, sd.student_key, dd.year, cd.faculty
+	<br><b>FROM</b> admt2014_unibzdw.degree_fact df, admt2014_unibzdw.student_dimension sd, admt2014_unibzdw.date_dimension dd, admt2014_unibzdw.curriculum_dimension cd
+	<br><b>WHERE</b> df.student_key = sd.student_key <b>AND</b> df.date_key = dd.date_key <b>AND</b> sd.curriculum_key = cd.curriculum_key
+	<br><b>GROUP BY</b> sd.student_key, cd.faculty, dd.year,sd.status
+	<br><b>ORDER BY</b> dd.year, cd.faculty;	</div></div></div>
+                                        
+                                        <div class="panel box box-danger">
+                                            <div class="box-header">
+                                                <h4 class="box-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" class="collapsed">
+                                                        Query
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                             <div id="collapseThree" class="panel-collapse collapse" style="height: 0px;">
+                                                <div class="box-body">
+<b>SELECT</b> sd.student_key, sd.year, sd.faculty
+<br><b>FROM</b> admt2014_unibzdw.degreed_year_faculty sd
+<br><b>WHERE</b> sd.status='Degreed'
+<br><b>GROUP BY</b> sd.student_key, sd.year, sd.faculty
+<br><b>ORDER BY</b> sd.year;</div></div></div>
+                
+                
+                
                 <div class="box box-success">
                                 <div class="box-header">
                                     <h3 class="box-title">Results</h3>
@@ -163,79 +185,36 @@
                                 <div class="box-body">
                                     <table id="rollup" class="table table-bordered table-hover dataTable" aria-describedby="example2_info">
                                         <thead>
-                                            <tr role="row"><th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Students</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Enrollment Year</th></tr>
+                                            <tr role="row"><th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Student key</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Year</th><th class="sorting" role="columnheader" tabindex="0" aria-controls="example2" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Faculty</th></tr>
                                         </thead>
                                                                                 
                                         <tfoot>
-                                            <tr><th rowspan="1" colspan="1">Students</th><th rowspan="1" colspan="1">Enrollment Year</th></tr>
+                                            <tr><th rowspan="1" colspan="1">Student key</th><th rowspan="1" colspan="1">Year</th><th rowspan="1" colspan="1">Faculty</th></tr>
                                         </tfoot>
                                         <tbody role="alert" aria-live="polite" aria-relevant="all">
                                         <%
-                                        	Vector<Enrollment> enrolled_stud = dbConn.camparison_enrollment_year(); 
-                                        int diff = 0;
-                                                                                for(int i=0; i<enrolled_stud.size();i++)
+                                        	Vector<Graduation> i_ships = dbConn.grad_year_fac();                                        
+                                                                                for(int i=0; i<i_ships.size();i++)
                                                                                 	{
-                                                                                	if(enrolled_stud.get(i).getYear()!=0){
                                         %>
                                         	
                                         	<tr class="odd">
-                                                <td class=" sorting_1"><%out.print(enrolled_stud.get(i).getStudents()); %></td>
-                                                <td class=" "><%out.print(enrolled_stud.get(i).getYear()); }
-                                                                                	else
-                                                                                		diff = enrolled_stud.get(i).getStudents();
-                                                
-                                                %></td>                                                                                               
+                                                <td class=" sorting_1"><%out.print(i_ships.get(i).getKey_one()); %></td>
+                                                <td class=" "><%out.print(i_ships.get(i).getKey_two()); %></td>
+                                                <td class=" "><%out.print(i_ships.get(i).getName()); %></td>                                               
                                         	</tr>
                                         	<%
                                         	}                                        	
                                         	%></tbody></table>
-                                        	<br>
-                                        	The difference between year 2013 and 2014 is: <b><%out.print(Math.abs(diff));%></b>
                                 </div><!-- /.box-body -->
                             </div>
                             </div>
-                            </div>
-                            <div class="col-md-6">
-
-							<div class="box box-solid">
-                                <div class="box-header">
-                                    <i class="fa fa-bar-chart-o"></i>
-                                    <h3 class="box-title">Charts</h3>
-                                    <div class="box-tools pull-right">
-                                        <button class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                                        <button class="btn btn-default btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div><!-- /.box-header -->
-                                <div class="box-body">
-                                    <div class="row">
-                                    <%
-                                        	diff = 0;
-                                                                                for(int i=0; i<enrolled_stud.size();i++)
-                                                                                	{
-                                                                                	if(enrolled_stud.get(i).getYear()!=0){
-                                        %>
-                                        <div class="col-md-3 col-sm-6 col-xs-6 text-center">
-                                            <div style="display: inline; width: 90px; height: 90px;"><canvas width="135" height="135" style="width: 90px; height: 90px;"></canvas><input type="text" class="knob" value="<%out.print(enrolled_stud.get(i).getStudents()); %>" data-skin="tron" data-thickness="0.2" data-width="90" data-height="90" data-fgcolor="#3c8dbc" data-readonly="true" readonly="readonly" style="width: 49px; height: 30px; position: absolute; vertical-align: middle; margin-top: 30px; margin-left: -69px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 18px; line-height: normal; font-family: Arial; text-align: center; color: rgb(60, 141, 188); padding: 0px; -webkit-appearance: none; background: none;"></div>
-                                            <div class="knob-label"><%out.print(enrolled_stud.get(i).getYear()); }%></div>
-                                        </div><!-- ./col -->
-                                        <%}%>
-                                        
-                                        
-                                    </div><!-- /.row -->
-                                </div><!-- /.box-body -->
-                            </div>
-
-
-                            	
-                            	
-                                                
-                            </div>
-                            </div>
-                            </div>
-                            
+                            </div>      
+                    
+                
                             
                 </section><!-- /.content -->
-                
+
             </aside><!-- /.right-side -->
         </div><!-- ./wrapper -->
 

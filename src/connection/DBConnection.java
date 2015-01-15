@@ -17,6 +17,9 @@ public class DBConnection {
     private boolean correct = true;
     public Vector<InOutcoming_Student> inOut_students = new Vector<InOutcoming_Student>();
     public Vector<Enrollment> enrolled = new Vector<Enrollment>();
+    public Vector<Internship> internships = new Vector<Internship>();
+    public Vector<Graduation> graduations = new Vector<Graduation>();
+    
     
     private String name = null;
     
@@ -63,48 +66,46 @@ public class DBConnection {
 
     // connect to the database
     public boolean getDBConnection() throws Exception{
-        String host = "postgresql.admt2014.alwaysdata.net:";
+        String host = "localhost:";
 		String port = "5432";
 		try {
 			Class.forName("org.postgresql.Driver");
-			String connectionUrl1 = "jdbc:postgresql://" + host + port + "/" + "admt2014_users";
-			connectionDBusers = DriverManager.getConnection(connectionUrl1, "admt2014", "admt");
-			
-			Statement stmt = connectionDBusers.createStatement();            
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(user_key) AS ussdw FROM user_dw WHERE username ='"+username+"' AND password ='"+password+"'");
-
-            int numberUser = 0;
-            while (rs.next()){
-            	numberUser = Integer.parseInt(rs.getString("ussdw"));           	
-            }
-
-			if (numberUser==1){
+//			String connectionUrl1 = "jdbc:postgresql://" + host + port + "/" + "admt2014_users";
+//			connectionDBusers = DriverManager.getConnection(connectionUrl1, "admt2014", "admt");
+//			
+//			Statement stmt = connectionDBusers.createStatement();            
+//            ResultSet rs = stmt.executeQuery("SELECT COUNT(user_key) AS ussdw FROM user_dw WHERE username ='"+username+"' AND password ='"+password+"'");
+//
+//            int numberUser = 0;
+//            while (rs.next()){
+//            	numberUser = Integer.parseInt(rs.getString("ussdw"));           	
+//            }
+//
+//			if (numberUser==1){
+//				
+//				Statement stmt2 = connectionDBusers.createStatement();            
+//	            ResultSet rs2 = stmt2.executeQuery("SELECT name FROM user_dw WHERE username ='"+username+"' AND password ='"+password+"'");
+//	            while (rs2.next()){
+//	            	setName(rs2.getString("name"));           	
+//	            }
+//	            closeDBusersConnection();
+	            String connectionUrl = "jdbc:postgresql://" + host + port + "/" + "postgres";
+				conn = DriverManager.getConnection(connectionUrl, "postgres", "admin");
 				
-				Statement stmt2 = connectionDBusers.createStatement();            
-	            ResultSet rs2 = stmt2.executeQuery("SELECT name FROM user_dw WHERE username ='"+username+"' AND password ='"+password+"'");
-	            while (rs2.next()){
-	            	setName(rs2.getString("name"));           	
-	            }
-	            closeDBusersConnection();
-	            String connectionUrl = "jdbc:postgresql://" + host + port + "/" + "admt2014_uniwarehouse";
-				conn = DriverManager.getConnection(connectionUrl, "admt2014", "admt");
-				
-				return true;
-			}
-			else 
-				setLogin(false);
+//				return true;
+//			}
+//			else 
+//				setLogin(false);
 			
-		} catch (ClassNotFoundException e) {
-			System.out.println(e.getMessage());
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
-		return false;
+		return true;
     }
     
     // disconnect from the database
     public void closeDBusersConnection() throws SQLException{
-    	connectionDBusers.close();
+    	conn.close();
     }
     
     /*ROLLUP Query*/
@@ -160,384 +161,125 @@ public class DBConnection {
         return enrolled;
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /*Query 1*/
-    public Vector<String> selectAllDoctors(){
-    		Vector<String> allDoctors = new Vector<String>();
-        	try {
-        		Statement stmt = connectionDBusers.createStatement();            
-                ResultSet rs = stmt.executeQuery("SELECT SSN, FirstName, LastName, Speciality FROM Doctor");
-                while (rs.next()){
-                	String FirstName = rs.getString("FirstName");
-    				String LastName = rs.getString("LastName");
-    				String Speciality = rs.getString("Speciality");
-                	String SSN = rs.getString("SSN");
-                	allDoctors.add(SSN+ " " + FirstName +" "+ LastName+ " "+ "Specialized in "+Speciality);
-                }
-            } catch (SQLException e) {System.out.println(e);}
-            return allDoctors;
-        }
-    
-
-    
-//    public Vector<String> giveDepartmentByFloor(String floor1, String floor2){
-//    	System.out.println("floor1: "+floor1+" floor2: "+floor2);
-//		Vector<String> departmentByFloor = new Vector<String>();
-//    	try {
-//    		Statement stmt = conn.createStatement();   
-//            ResultSet rs = stmt.executeQuery("SELECT D.name" +
-//            		" FROM DEPARTMENT D" +
-//            		" WHERE NOT EXISTS( select S.DEP_Name "+
-//          				  "FROM SITUATED S"+
-//          				  "WHERE ( f_floornumber ="+ floor1 +"" +
-//          				  			"OR" +
-//          						 "[f_floornumber="+ floor2 +"]) AND"+
-//          						 "(NOT EXISTS ( select D1.name"+
-//          									   "from DEPARTMENT D1"+
-//          									   "where D1.name = S.DEP_NAME AND"+
-//          									  " D1.name = D.name)))");
-//            while (rs.next()){
-//            	String dep = rs.getString("name");
-//            	
-//            	departmentByFloor.add("The Department of " +dep+ " is situated in "+floor1+" "+floor2+" and  is the director.");
-//            }
-//        } catch (SQLException e) {System.out.println(e);}
-//        return departmentByFloor;
-//    }
-//    
-//    /*Query 3
-//     * select P.FirstName, P.LastName
-//	from Patient P
-//	where NOT EXISTS ( select A.PSSN
-//				   from Account A
-//				   where ( A.Amount > 500) AND
-//				   (NOT EXISTS ( select P1.SSN
-//								 from Patient P1
-//								 where P1.SSN = P.SSN AND
-//									   P1.SSN = A.PSSN)))
-//     * */
-//    public Vector<String> givePatientByAccount(String bal){
-//		Vector<String> patientByAccount = new Vector<String>();
-//    	try {
-//    		Statement stmt = conn.createStatement();            
-//            ResultSet rs = stmt.executeQuery("SELECT P.FirstName, P.LastName" +
-//            		" FROM Patient P" +
-//            		" WHERE NOT EXISTS( select A.PSSN "+
-//          				  "FROM Account A"+
-//          				  "WHERE ( A.Amount > '"+ bal +"' )"+
-//          						"AND("+
-//          						"NOT EXISTS ( select	P1.SSN"+
-//          									 "from Patient P1"+
-//          									 "where P1.SSN = P.SSN AND"+
-//          										"P1.SSN = A.PSSN )))");
-//            while (rs.next()){
-//            	String fname = rs.getString("P.FirstName");
-//            	String lname = rs.getString("P.LastName");
-//            	patientByAccount.add(fname+ " "+lname+" "+" has an acount balance more than" +bal);
-//            }
-//        } catch (SQLException e) {System.out.println(e);}
-//        return patientByAccount;
-//    }
-//    
-    /* Query 4*/
-    public String countPatientByRoom(String room){
-    	String patientbyRoom = null;
-    		//Vector<String> patientByRoom = new Vector<String>();
-        	try {
-        		Statement stmt = connectionDBusers.createStatement();            
-                ResultSet rs = stmt.executeQuery("SELECT COUNT(SSN) AS asd FROM Patient WHERE R_RoomNumber ='"+room+"'");
-                while (rs.next()){
-                	String count = rs.getString("asd");
-                	patientbyRoom="There are "+count+" patient in room "+room+".";
-                }
-            } catch (SQLException e) {System.out.println(e);}
-            return patientbyRoom;
-        }
-
-    /* Query 5 */
-    public Vector<String> selectPatientbyAge(String age){
-    		Vector<String> patientByAge = new Vector<String>();
-        	try {
-        		Statement stmt = connectionDBusers.createStatement();            
-                ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Patient WHERE Age >'"+age+"'");
-                while (rs.next()){
-                	String fname = rs.getString("FirstName");
-                	String lname = rs.getString("LastName");
-    				patientByAge.add("Patient "+fname+" "+lname+" "+"has age more then "+age);
-                }
-            } catch (SQLException e) {System.out.println(e);}
-            return patientByAge;
-        }
-    	
-    /*Query 6*/
-    public Vector<String> selectPatientsByDepartment(String department){
-    		Vector<String> patientsByDepartment = new Vector<String>();
-        	try {
-        		Statement stmt = connectionDBusers.createStatement();          
-                ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Patient WHERE DEP_Name='"+department+"'");
-                while (rs.next()){
-                	String fname = rs.getString("FirstName");
-                	String lname = rs.getString("LastName");
-                	patientsByDepartment.add("Patient : "+fname+" " + lname + " is admmitted in "+department);
-                }
-            } catch (SQLException e) {System.out.println(e);}
-            return patientsByDepartment;
-        }
-
-    	/*Query 7*/
-    	public Vector<String> countPatientByDep(String department){
-    		Vector<String> patientByDep = new Vector<String>();
-        	try {
-        		Statement stmt = connectionDBusers.createStatement();            
-                ResultSet rs = stmt.executeQuery("SELECT count(SSN) as asd FROM Patient WHERE DEP_Name ='"+department+"'");
-                while (rs.next()){
-                	String count = rs.getString("asd");
-                	patientByDep.add("There are "+ count + " patient in - " +department + " department.");
-                }
-            } catch (SQLException e) {System.out.println(e);}
-            return patientByDep;
-        }
-    	
-    /*Query 8a*/
-    public Vector<String> selectHasAccount(){
-    		Vector<String> hasAccount = new Vector<String>();
-        	try {
-        		Statement stmt = connectionDBusers.createStatement();            
-                ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Patient AS p, Account AS a WHERE p.SSN = a.PSSN");
-                while (rs.next()){
-                	String fname = rs.getString("FirstName");
-                	String lname = rs.getString("LastName");
-                	hasAccount.add(fname + " " + lname + " has an account ");
-                }
-            } catch (SQLException e) {System.out.println(e);}
-            return hasAccount;
-        }
-
-
-    /* Query 8b
-    	select SSN, FirstName, LastName
-    	from Paitent
-
-    	except
-
-    	select SSN, FirstName, LastName
-    	form Patient P , Account A
-    	where P.SSN = A.PSSN
-
-    	select patient don't have an account*
-
-    	
-    		public Vector<String> selectNoaccount(){
-    			Vector<String> noAccount = new Vector<String>();
-    	    	try {
-    	    		Statement stmt = conn.createStatement();            
-    	            ResultSet rs = stmt.executeQuery("SELECT p.SSN, p.FirstName, p.LastName" +
-    	            		" FROM Patient p" +
-    	            		" except"+
-    						" SELECT p.SSN, p.FirstName, p.LastName"+
-    						" FROM Patient AS p, Account AS a" +
-    						"WHERE p.SSN = a.PSSN ");
-    	            while (rs.next()){
-    	            	String fname = rs.getString("p.FirstName");
-    	            	String lname = rs.getString("p.LastName");
-    	            	String ssn = rs.getString("p.SSN");
-    	            	noAccount.add(fname+" "+lname+" has no account and his / her ssn is "+ssn);
-    	            }
-    	        } catch (SQLException e) {System.out.println(e);}
-    	        return noAccount;
-    	    }*/
-
-    	/*Query 9*/
-    		public Vector<String> selectDoctor(String sex){
-    			Vector<String> doctor = new Vector<String>();
-    	    	try {
-    	    		Statement stmt = connectionDBusers.createStatement();            
-    	            ResultSet rs = stmt.executeQuery("SELECT * FROM Doctor WHERE Sex ='"+sex+"'");
-    	            while (rs.next()){
-    	            	String SSN = rs.getString("SSN");
-    	            	String fname = rs.getString("FirstName");
-    					String lname = rs.getString("LastName");
-    					String address = rs.getString("Address");
-    					String bdate = rs.getString("Birthdate");
-    					String spe = rs.getString("Speciality");
-    					String dep = rs.getString("DEP_Name");
-    					doctor.add(SSN+" "+fname+" " +lname+" "+address+" "+bdate+" "+spe+ " "+dep);
-    					;
-    	            }
-    	        } catch (SQLException e) {System.out.println(e);}
-    	        return doctor;
-    	    }
-    		
-    	/*Query 10*/
-	    public Vector<String> selectPatientByRoom(String room){
-	    		Vector<String> patientByRoom= new Vector<String>();
-	        	try {
-	        		Statement stmt = connectionDBusers.createStatement();            
-	                ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Patient WHERE R_RoomNumber = '"+room+"'");
-	                while (rs.next()){
-	                	String fname = rs.getString("FirstName");
-	                	String lname = rs.getString("LastName");
-	                   	patientByRoom.add(fname+" "+lname+" staying in room - "+room);
-	                }
-	            } catch (SQLException e) {System.out.println(e);}
-	            return patientByRoom;
-	        }
-    	
-    	/*Query 11*/
-	    public Vector<String> selectDoctorBySpe(String speciality){
-	    		Vector<String> doctorBySpe= new Vector<String>();
-	        	try {
-	        		Statement stmt = connectionDBusers.createStatement();            
-	                ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Doctor WHERE Speciality = '"+speciality+"'");
-	                while (rs.next()){
-	                	String fname = rs.getString("FirstName");
-	                	String lname = rs.getString("LastName");
-	                	doctorBySpe.add(fname+" "+lname+" is specialized in - "+speciality);
-	                }
-	            } catch (SQLException e) {System.out.println(e);}
-	            return doctorBySpe;
-	        }
-
-    	/*Query 13*/    	
-    	public Vector<String> selectPatientByDate(String day){
-    		Vector<String> patientByDate= new Vector<String>();
-        	try {
-        		Statement stmt = connectionDBusers.createStatement();            
-                ResultSet rs = stmt.executeQuery("SELECT FirstName, LastName FROM Patient WHERE DayIn= '"+day+"'");
-                while (rs.next()){
-                	String fname = rs.getString("FirstName");
-                	String lname = rs.getString("LastName");
-                   	patientByDate.add(fname+" "+lname+" entred in- "+day);
-                }
-            } catch (SQLException e) {System.out.println(e);}
-            return patientByDate;
-        }
-
-    	/*Query 14*/	
-    	public Vector<String> selectDirectorInfo(String director){
-    		Vector<String> directorInfo= new Vector<String>();
-        	try {
-        		Statement stmt = connectionDBusers.createStatement();            
-                ResultSet rs = stmt.executeQuery("SELECT * FROM Department WHERE Director ='"+director+"'");
-                while (rs.next()){
-                	String fname = rs.getString("FirstName");
-                	String lname = rs.getString("LastName");
-                	directorInfo.add(fname+" "+lname);
-                }
-            } catch (SQLException e) {System.out.println(e);}
-            return directorInfo;
-        }
-    	
-    	/*Query 15*/   	
-	    public Vector<String> selectNurseDetails(){
-	    		Vector<String> nurseDetails= new Vector<String>();
-	        	try {
-	        		Statement stmt = connectionDBusers.createStatement();            
-	                ResultSet rs = stmt.executeQuery("SELECT SSN, FirstName, LastName FROM Nurse");
-	                while (rs.next()){
-	                	String fname = rs.getString("FirstName");
-	                	String lname = rs.getString("LastName");
-	    				String ssn = rs.getString("SSN");
-	                   	nurseDetails.add(fname+" "+lname+"and his/her SSN is" +ssn);
-	                }
-	            } catch (SQLException e) {System.out.println(e);}
-	            return nurseDetails;
-	        }	
-    
-    /* Query 19*/ 	
-    public void selectDeletePatient(String ssn){
-        	try {
-        		Statement stmt = connectionDBusers.createStatement();            
-                stmt.executeQuery("DELETE FROM Patient WHERE SSN ='"+ssn+"'");
-            } catch (SQLException e) {System.out.println(e);}
-        }	
-    
-    /* Query 20*/
-    public Vector<String> deleteClosedAccount(){
-		Vector<String> closedAccount = new Vector<String>();
+    public Vector<Internship> windowing(){
+		if(!internships.isEmpty())
+			internships.clear();
     	try {
-    		Statement stmt = connectionDBusers.createStatement();            
-            ResultSet rs = stmt.executeQuery("DELETE FROM Account WHERE DayClose IS NOT null");
-            while (rs.next()){            	
-               	closedAccount.add("All closed accoutn is deleted from the database.");
-            }
-        } catch (SQLException e) {System.out.println(e);}
-        return closedAccount;
-    }
-    
-    /*Query 21*/    
-    public void insertNewDepartment(String nam, String dir){
-    	try {
-    		Statement stmt = connectionDBusers.createStatement();            
-            		stmt.execute("INSERT INTO Department values ('"+nam+"', '"+dir+"') ");
-        } catch (SQLException e) {System.out.println(e);}
-    }
-  
-    /*Query 22*/    
-    public Vector<String> updateNewDirector(String director, String dep){
-		Vector<String> newDirector = new Vector<String>();
-    	try {
-    		Statement stmt = connectionDBusers.createStatement();            
-            ResultSet rs = stmt.executeQuery("UPDATE Department SET Director = '"+director+"' WHERE Name = '"+dep + "'");
+    		Statement stmt = conn.createStatement();            
+            ResultSet rs = stmt.executeQuery("SELECT dd.month, count(inf.student_key) as total, lag(count(inf.student_key),1) OVER (order by dd.month) as lag_month, lead(count(inf.student_key),1) OVER (order by dd.month) as lead_month FROM admt2014_unibzdw.internship_fact inf join admt2014_unibzdw.date_dimension dd on inf.start_date_key=dd.date_key where year='2012' group by dd.month;");
+            
             while (rs.next()){
-               	newDirector.add(director+" is the new director of "+dep+ " department");
+            	String month = nameMonth(rs.getInt("month"));
+            	int students = rs.getInt("total");
+				int lag_month = rs.getInt("lag_month");	
+				int lead_month = rs.getInt("lead_month");
+				internships.add(new Internship(month, lag_month, lead_month, students, null, 0, 0, 0));
             }
-        } catch (SQLException e) {System.out.println(e);}
-        return newDirector;
+        } catch (SQLException e) {System.out.println(internships.size());System.out.println(e.getMessage()+e.getLocalizedMessage());}
+        return internships;
     }
     
-    /*Query 23*/
-    public Vector<String> updateNumberNurse(String floor , int num){
-		Vector<String> numberNurse = new Vector<String>();
+    
+    public static String nameMonth(int n){
+    	switch(n){
+    	case 1:
+    		return "January";
+    	case 2:
+    		return "February";
+    	case 3:
+    		return "March";
+    	case 4:
+    		return "April";
+    	case 5:
+    		return "May";
+    	case 6:
+    		return "June";
+    	case 7:
+    		return "July";
+    	case 8:
+    		return "August";
+    	case 9:
+    		return "September";
+    	case 10:
+    		return "October";
+    	case 11:
+    		return "November";
+    	case 12:
+    		return "December";
+    	}
+    	return null;
+    }
+    
+    
+    
+    public Vector<Internship> ranking(){
+		if(!internships.isEmpty())
+			internships.clear();
     	try {
-    		Statement stmt = connectionDBusers.createStatement();            
-            ResultSet rs = stmt.executeQuery("UPDATE Floor SET NumbernNurse = '"+num+"' WHERE FloorNumber = '"+floor + "'");
-            while (rs.next()){            	
-               	numberNurse.add("Now there are "+num+" nurses in Floor - "+floor);
+    		Statement stmt = conn.createStatement();            
+            ResultSet rs = stmt.executeQuery("SELECT cT.country as Country, dT.year as year, AVG(infoT.salary) as Average_Salary, RANK() OVER (PARTITION BY year ORDER BY AVG(infoT.salary) DESC) as Ranking FROM admt2014_unibzdw.company_dimension cT JOIN admt2014_unibzdw.internship_fact iT ON iT.company_key =cT.company_key JOIN admt2014_unibzdw.date_dimension dT on iT.start_date_key= dT.date_key JOIN admt2014_unibzdw.internship_info_dimension infoT ON infoT.info_key = iT.info_key WHERE cT.country IN ('Indonesia', 'China', 'Sweden', 'Russia') AND dT.year IN (2008, 2009, 2010, 2011, 2012, 2013, 2014) GROUP BY cT.country, dT.year;");
+            
+            while (rs.next()){
+            	String country = rs.getString("Country");
+            	int year = rs.getInt("year");
+				double salary = rs.getDouble("Average_Salary");	
+				int ranking = rs.getInt("Ranking");
+//				System.out.println(country+" "+year+" "+salary+" "+ranking);
+				internships.add(new Internship(null, 0, 0, 0, country, year, salary, ranking));
             }
-        } catch (SQLException e) {System.out.println(e);}
-        return numberNurse;
+        } catch (SQLException e) {System.out.println(internships.size());System.out.println(e.getMessage()+e.getLocalizedMessage());}
+        return internships;
     }
     
-    /*Query 24*/
-    public void insertNewFloor(String floorNumber, int rooms, int nurses){
+    public Vector<Graduation> grad_year_sp(){
+		if(!graduations.isEmpty())
+			graduations.clear();
     	try {
-    		Statement stmt = connectionDBusers.createStatement();            
-            		stmt.execute("INSERT INTO Floor values ('"+floorNumber+"', '"+rooms+"', '"+nurses+"')" );
-        } catch (SQLException e) {System.out.println(e);}
+    		Statement stmt = conn.createStatement();            
+            ResultSet rs = stmt.executeQuery("SELECT sd.student_key, sd.year, sd.study_plan FROM admt2014_unibzdw.degreed_year_study_plan sd WHERE sd.status='Degreed' GROUP BY sd.student_key, sd.year, sd.study_plan ORDER BY sd.year, sd.study_plan;");
+            
+            while (rs.next()){
+            	int key_one = rs.getInt("student_key");
+            	int key_two = rs.getInt("year");
+				String name = rs.getString("study_plan");	
+				graduations.add(new Graduation(key_one, key_two, name, null));
+            }
+        } catch (SQLException e) {System.out.println(graduations.size());System.out.println(e.getMessage()+e.getLocalizedMessage());}
+        return graduations;
     }
     
-    /*Query 25*/
-    public void insertNewDoctor(String dssn, String dfn, String dln, String dsex,String dadd, String ddate, String dspe, String ddep){
+    public Vector<Graduation> grad_year_fac(){
+		if(!graduations.isEmpty())
+			graduations.clear();
     	try {
-    		Statement stmt = connectionDBusers.createStatement();            
-            		stmt.execute(" INSERT INTO Doctor values ('"+dssn+"', '"+dfn+"', '"+dln+"', '"+dsex+"', '"+dadd+"', '"+ddate+"', '"+dspe+"', '"+ddep+"') " );
-        } catch (SQLException e) {System.out.println(e);}
+    		Statement stmt = conn.createStatement();            
+            ResultSet rs = stmt.executeQuery("SELECT sd.student_key, sd.year,sd.faculty FROM admt2014_unibzdw.degreed_year_faculty sd WHERE sd.status='Degreed' GROUP BY sd.student_key, sd.year,sd.faculty ORDER BY sd.year;");
+            
+            while (rs.next()){
+            	int key_one = rs.getInt("student_key");
+            	int key_two = rs.getInt("year");
+				String name = rs.getString("faculty");	
+				graduations.add(new Graduation(key_one, key_two, name, null));
+            }
+        } catch (SQLException e) {System.out.println(graduations.size());System.out.println(e.getMessage()+e.getLocalizedMessage());}
+        return graduations;
     }
     
-    /*Query 26*/
-	 public void insertNewNurse(String nssn, String nfn, String nln, String nsex,String nadd, String ndate, String nfloor){
-	    	try {
-	    		Statement stmt = connectionDBusers.createStatement();            
-	            		stmt.execute(" INSERT INTO Nurse" +
-	            							" values ('"+nssn+"', '"+nfn+"', '"+nln+"', '"+nsex+"', '"+nadd+"', '"+ndate+"', '"+nfloor+"') " );
-	        } catch (SQLException e) {System.out.println(e);}
-	    }
+    public Vector<Graduation> grad_fac_sup(){
+		if(!graduations.isEmpty())
+			graduations.clear();
+    	try {
+    		Statement stmt = conn.createStatement();            
+            ResultSet rs = stmt.executeQuery("SELECT sd.student_key, sd.faculty, sd.surname FROM admt2014_unibzdw.degreed_faculty_supervisor sd WHERE sd.status='Degreed' GROUP BY sd.student_key, sd.faculty, sd.surname ORDER BY sd.faculty;");
+            
+            while (rs.next()){
+            	int key_one = rs.getInt("student_key");
+            	String name_one = rs.getString("faculty");
+				String name = rs.getString("surname");	
+				graduations.add(new Graduation(key_one, 0, name, name_one));
+            }
+        } catch (SQLException e) {System.out.println(graduations.size());System.out.println(e.getMessage()+e.getLocalizedMessage());}
+        return graduations;
+    }
+    
 }

@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="prova">
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="uniwarehouse">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="context-root" value="prova"/>
-        <property name="java-output-path" value="/prova/build/classes"/>
+        <property name="java-output-path" value="/uniwarehouse/build/classes"/>
+        <property name="context-root" value="uniwarehouse"/>
     </wb-module>
 </project-modules>
