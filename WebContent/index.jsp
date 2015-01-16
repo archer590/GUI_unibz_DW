@@ -43,7 +43,7 @@
 
         <!-- header logo: style can be found in header.less -->
         <header class="header">
-            <a href="main.jsp" class="logo">
+            <a href="index.jsp" class="logo">
             <div class="icon">
                                     <i class="ion-university"></i>
                                     uniwarehouse
@@ -85,7 +85,7 @@
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
                         <li class="active">
-                            <a href="main.jsp">
+                            <a href="index.jsp">
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
                         </li>
